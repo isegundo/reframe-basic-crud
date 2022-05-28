@@ -6,61 +6,63 @@
    [reframe-basic-crud.routes :as routes]
    [reframe-basic-crud.subs :as subs]))
 
-
-
 ;; home
-
 (defn home-title []
-  (let [name (re-frame/subscribe [::subs/name])]
-    [re-com/title
-     :src   (at)
-     :label (str "Hello from " @name ". This is the Home Page." )
-     :level :level1]))
-
-(defn link-to-about-page []
-  [re-com/hyperlink
-   :src      (at)
-   :label    "go to About Page"
-   :on-click #(re-frame/dispatch [::events/navigate :about])])
+  [re-com/title
+   :src   (at)
+   :label (str "This is the Home Page.")
+   :level :level1])
 
 (defn home-panel []
   [re-com/v-box
    :src      (at)
    :gap      "1em"
-   :children [[home-title]
-              [link-to-about-page]]])
-
+   :children [[home-title]]])
 
 (defmethod routes/panels :home-panel [] [home-panel])
 
-;; about
-
-(defn about-title []
+;; tasks
+(defn tasks-title []
   [re-com/title
    :src   (at)
-   :label "This is the About Page."
+   :label "This is the Tasks Page."
    :level :level1])
+
+(defn tasks-panel []
+  [re-com/v-box
+   :src      (at)
+   :gap      "1em"
+   :children [[tasks-title]]])
+
+(defmethod routes/panels :tasks-panel [] [tasks-panel])
 
 (defn link-to-home-page []
   [re-com/hyperlink
    :src      (at)
-   :label    "go to Home Page"
+   :label    "Home"
    :on-click #(re-frame/dispatch [::events/navigate :home])])
 
-(defn about-panel []
-  [re-com/v-box
+(defn link-to-tasks-page []
+  [re-com/hyperlink
    :src      (at)
-   :gap      "1em"
-   :children [[about-title]
-              [link-to-home-page]]])
+   :label    "Tasks"
+   :on-click #(re-frame/dispatch [::events/navigate :tasks])])
 
-(defmethod routes/panels :about-panel [] [about-panel])
+(defn header [app-name]
+  [:div 
+   [:h1 app-name]
+   [link-to-home-page]
+   [:br]
+   [link-to-tasks-page]])
 
 ;; main
 
 (defn main-panel []
-  (let [active-panel (re-frame/subscribe [::subs/active-panel])]
-    [re-com/v-box
-     :src      (at)
-     :height   "100%"
-     :children [(routes/panels @active-panel)]]))
+  (let [app-name (re-frame/subscribe [::subs/app-name])
+        active-panel (re-frame/subscribe [::subs/active-panel])]
+    [:div 
+     [header @app-name]
+     [re-com/v-box
+      :src      (at)
+      :height   "100%"
+      :children [(routes/panels @active-panel)]]]))
