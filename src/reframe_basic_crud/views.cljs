@@ -1,36 +1,58 @@
 (ns reframe-basic-crud.views
   (:require
    [re-frame.core :as re-frame]
+   [re-com.core :as re-com :refer [at]]
    [reframe-basic-crud.events :as events]
    [reframe-basic-crud.routes :as routes]
-   [reframe-basic-crud.subs :as subs]
-   ))
+   [reframe-basic-crud.subs :as subs]))
+
 
 
 ;; home
 
-(defn home-panel []
+(defn home-title []
   (let [name (re-frame/subscribe [::subs/name])]
-    [:div
-     [:h1
-      (str "Hello from " @name ". This is the Home Page.")]
+    [re-com/title
+     :src   (at)
+     :label (str "Hello from " @name ". This is the Home Page." )
+     :level :level1]))
 
-     [:div
-      [:a {:on-click #(re-frame/dispatch [::events/navigate :about])}
-       "go to About Page"]]
-     ]))
+(defn link-to-about-page []
+  [re-com/hyperlink
+   :src      (at)
+   :label    "go to About Page"
+   :on-click #(re-frame/dispatch [::events/navigate :about])])
+
+(defn home-panel []
+  [re-com/v-box
+   :src      (at)
+   :gap      "1em"
+   :children [[home-title]
+              [link-to-about-page]]])
+
 
 (defmethod routes/panels :home-panel [] [home-panel])
 
 ;; about
 
-(defn about-panel []
-  [:div
-   [:h1 "This is the About Page."]
+(defn about-title []
+  [re-com/title
+   :src   (at)
+   :label "This is the About Page."
+   :level :level1])
 
-   [:div
-    [:a {:on-click #(re-frame/dispatch [::events/navigate :home])}
-     "go to Home Page"]]])
+(defn link-to-home-page []
+  [re-com/hyperlink
+   :src      (at)
+   :label    "go to Home Page"
+   :on-click #(re-frame/dispatch [::events/navigate :home])])
+
+(defn about-panel []
+  [re-com/v-box
+   :src      (at)
+   :gap      "1em"
+   :children [[about-title]
+              [link-to-home-page]]])
 
 (defmethod routes/panels :about-panel [] [about-panel])
 
@@ -38,4 +60,7 @@
 
 (defn main-panel []
   (let [active-panel (re-frame/subscribe [::subs/active-panel])]
-    (routes/panels @active-panel)))
+    [re-com/v-box
+     :src      (at)
+     :height   "100%"
+     :children [(routes/panels @active-panel)]]))

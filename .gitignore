@@ -14,6 +14,7 @@
 # shadow-cljs cache, port files
 /.shadow-cljs/
 
+# clj-kondo cache
+/.clj-kondo/.cache
 .calva/
-.clj-kondo/.cache/
 .lsp/

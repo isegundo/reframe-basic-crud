@@ -18,20 +18,28 @@ you.
   [Reagent](https://github.com/reagent-project/reagent) ->
   [React](https://github.com/facebook/react)
   - Client-side routing: [bidi](https://github.com/juxt/bidi) and [pushy](https://github.com/kibu-australia/pushy)
+  - UI components: [re-com](https://github.com/day8/re-com)
 * Build tools
   - CLJS compilation, dependency management, REPL, & hot reload: [`shadow-cljs`](https://github.com/thheller/shadow-cljs)
+  - Test framework: [cljs.test](https://clojurescript.org/tools/testing)
+  - Test runner: [Karma](https://github.com/karma-runner/karma)
 * Development tools
   - Debugging: [CLJS DevTools](https://github.com/binaryage/cljs-devtools),
   [`re-frame-10x`](https://github.com/day8/re-frame-10x)
+  - Linter: [clj-kondo](https://github.com/borkdude/clj-kondo)
 
 #### Directory structure
 
 * [`/`](/../../): project config files
+* [`.clj-kondo/`](.clj-kondo/): lint config and cache files (cache files are not tracked; see
+[`.gitignore`](.gitignore))
 * [`dev/`](dev/): source files compiled only with the [dev](#running-the-app) profile
   - [`user.cljs`](dev/cljs/user.cljs): symbols for use during development in the
 [ClojureScript REPL](#connecting-to-the-browser-repl-from-a-terminal)
 * [`resources/public/`](resources/public/): SPA root directory;
 [dev](#running-the-app) / [prod](#production) profile depends on the most recent build
+  - [`vendor/`](resources/public/vendor/): UI component CSS, fonts, and images
+  ([re-com](https://github.com/day8/re-com))
   - [`index.html`](resources/public/index.html): SPA home page
     - Dynamic SPA content rendered in the following `div`:
         ```html
@@ -45,6 +53,9 @@ you.
 * [`src/reframe_basic_crud/`](src/reframe_basic_crud/): SPA source files (ClojureScript,
 [re-frame](https://github.com/Day8/re-frame))
   - [`core.cljs`](src/reframe_basic_crud/core.cljs): contains the SPA entry point, `init`
+* [`test/reframe_basic_crud/`](test/reframe_basic_crud/): test files (ClojureScript,
+[cljs.test](https://clojurescript.org/tools/testing))
+  - Only namespaces ending in `-test` (files `*_test.cljs`) are compiled and sent to the test runner
 * [`.github/workflows/`](.github/workflows/): contains the
 [github actions](https://github.com/features/actions) pipelines.
   - [`test.yaml`](.github/workflows/test.yaml): Pipeline for testing.
@@ -60,7 +71,22 @@ Use your preferred editor or IDE that supports Clojure/ClojureScript development
 1. Install [JDK 8 or later](https://openjdk.java.net/install/) (Java Development Kit)
 2. Install [Node.js](https://nodejs.org/) (JavaScript runtime environment) which should include
    [NPM](https://docs.npmjs.com/cli/npm) or if your Node.js installation does not include NPM also install it.
+3. Install [Chrome](https://www.google.com/chrome/) or
+[Chromium](https://www.chromium.org/getting-involved/download-chromium) version 59 or later
+(headless test environment)
+    * For Chromium, set the `CHROME_BIN` environment variable in your shell to the command that
+    launches Chromium. For example, in Ubuntu, add the following line to your `.bashrc`:
+        ```bash
+        export CHROME_BIN=chromium-browser
+       ```
+4. Install [clj-kondo](https://github.com/borkdude/clj-kondo/blob/master/doc/install.md) (linter)
 5. Clone this repo and open a terminal in the `reframe-basic-crud` project root directory
+6. (Optional) Setup [lint cache](https://github.com/borkdude/clj-kondo#project-setup):
+    ```sh
+    clj-kondo --lint "$(npx shadow-cljs classpath)"
+    ```
+7. Setup
+[linting in your editor](https://github.com/borkdude/clj-kondo/blob/master/doc/editor-integration.md)
 
 ### Browser Setup
 
@@ -150,6 +176,29 @@ For example, in Vim / Neovim with `fireplace.vim`
     The REPL prompt changes to `cljs.user=>`, indicating that this is now a ClojureScript REPL.
 3. See [`user.cljs`](dev/cljs/user.cljs) for symbols that are immediately accessible in the REPL
 without needing to `require`.
+
+### Running Tests
+
+Build the app with the `prod` profile, start a temporary local web server, launch headless
+Chrome/Chromium, run tests, and stop the web server:
+
+```sh
+npm install
+npm run ci
+```
+
+Please be patient; it may take over 15 seconds to see any output, and over 25 seconds to complete.
+
+Or, for auto-reload:
+```sh
+npm install
+npm run watch
+```
+
+Then in another terminal:
+```sh
+karma start
+```
 
 ### Running `shadow-cljs` Actions
 
