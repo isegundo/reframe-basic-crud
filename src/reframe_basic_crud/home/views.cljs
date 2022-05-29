@@ -25,15 +25,35 @@
                                :label "+"
                                :on-click (fn [] (swap! counter-state inc))]]]]])))
 
+(defn blue-line []
+  [re-com/line
+   :size "3px"
+   :color "blue"])
+
+(defn mouse-pos []
+  (reagent/with-let [pointer (reagent/atom nil)
+                     handler #(swap! pointer assoc
+                                     :x (.-pageX %)
+                                     :y (.-pageY %))
+                     _ (.addEventListener js/document "mousemove" handler)]
+    @pointer
+    (finally
+      (.removeEventListener js/document "mousemove" handler))))
+
+(defn tracked-pos []
+  [:div
+   "Pointer moved to: "
+   (str @(reagent/track mouse-pos))])
+
 (defn home-panel []
   [re-com/v-box
    :src      (at)
    :gap      "1em"
    :children [[home-title]
               [counter "Counter 1" 0]
-              [re-com/line
-               :size "3px"
-               :color "blue"]
-              [counter "Counter 2" 10]]])
+              [blue-line]
+              [counter "Counter 2" 10]
+              [blue-line]
+              [tracked-pos]]])
 
 (defmethod routes/panels :home-panel [] [home-panel])
