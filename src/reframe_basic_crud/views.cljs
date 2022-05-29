@@ -8,24 +8,25 @@
    [reframe-basic-crud.home.views]
    [reframe-basic-crud.tasks.views]))
 
-(defn link-to-home-page []
+(defn link-to-page [label route]
   [re-com/hyperlink
    :src      (at)
-   :label    "Home"
-   :on-click #(re-frame/dispatch [::events/navigate :home])])
-
-(defn link-to-tasks-page []
-  [re-com/hyperlink
-   :src      (at)
-   :label    "Tasks"
-   :on-click #(re-frame/dispatch [::events/navigate :tasks])])
+   :label label
+   :on-click #(re-frame/dispatch [::events/navigate route])])
 
 (defn header [app-name]
-  [:div
-   [:h1 app-name]
-   [link-to-home-page]
-   [:br]
-   [link-to-tasks-page]])
+  [re-com/h-box
+   :align :center
+   :padding "5px"
+   :children [[re-com/box
+               :margin "10px"
+               :child [:h2 app-name]]
+              [re-com/box
+               :margin "10px"
+               :child [link-to-page "Home" :home]]
+              [re-com/box
+               :margin "10px"
+               :child [link-to-page "Tasks" :tasks]]]])
 
 (defn main-panel []
   (let [app-name (re-frame/subscribe [::subs/app-name])
