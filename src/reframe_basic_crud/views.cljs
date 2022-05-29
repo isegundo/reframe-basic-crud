@@ -4,37 +4,9 @@
    [re-com.core :as re-com :refer [at]]
    [reframe-basic-crud.events :as events]
    [reframe-basic-crud.routes :as routes]
-   [reframe-basic-crud.subs :as subs]))
-
-;; home
-(defn home-title []
-  [re-com/title
-   :src   (at)
-   :label (str "This is the Home Page.")
-   :level :level1])
-
-(defn home-panel []
-  [re-com/v-box
-   :src      (at)
-   :gap      "1em"
-   :children [[home-title]]])
-
-(defmethod routes/panels :home-panel [] [home-panel])
-
-;; tasks
-(defn tasks-title []
-  [re-com/title
-   :src   (at)
-   :label "This is the Tasks Page."
-   :level :level1])
-
-(defn tasks-panel []
-  [re-com/v-box
-   :src      (at)
-   :gap      "1em"
-   :children [[tasks-title]]])
-
-(defmethod routes/panels :tasks-panel [] [tasks-panel])
+   [reframe-basic-crud.subs :as subs]
+   [reframe-basic-crud.home.views]
+   [reframe-basic-crud.tasks.views]))
 
 (defn link-to-home-page []
   [re-com/hyperlink
@@ -49,18 +21,16 @@
    :on-click #(re-frame/dispatch [::events/navigate :tasks])])
 
 (defn header [app-name]
-  [:div 
+  [:div
    [:h1 app-name]
    [link-to-home-page]
    [:br]
    [link-to-tasks-page]])
 
-;; main
-
 (defn main-panel []
   (let [app-name (re-frame/subscribe [::subs/app-name])
         active-panel (re-frame/subscribe [::subs/active-panel])]
-    [:div 
+    [:div
      [header @app-name]
      [re-com/v-box
       :src      (at)
